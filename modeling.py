@@ -661,9 +661,11 @@ def attention_layer(from_tensor,
   #   N = `num_attention_heads`
   #   H = `size_per_head`
 
+  # 将tensor转换为【-1, num]的matrix
   from_tensor_2d = reshape_to_matrix(from_tensor)
   to_tensor_2d = reshape_to_matrix(to_tensor)
 
+  # F是embedding的大小??
   # `query_layer` = [B*F, N*H]
   query_layer = tf.layers.dense(
       from_tensor_2d,
@@ -699,6 +701,8 @@ def attention_layer(from_tensor,
 
   # Take the dot product between "query" and "key" to get the raw
   # attention scores.
+  # `query_layer` = [B, N, F, H]
+  # `key_layer` = [B, N, T, H]
   # `attention_scores` = [B, N, F, T]
   attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
   attention_scores = tf.multiply(attention_scores,
@@ -734,6 +738,7 @@ def attention_layer(from_tensor,
   value_layer = tf.transpose(value_layer, [0, 2, 1, 3])
 
   # `context_layer` = [B, N, F, H]
+  # T对F的attention, 考虑T的情况下对F的每个term进行attention
   context_layer = tf.matmul(attention_probs, value_layer)
 
   # `context_layer` = [B, F, N, H]
