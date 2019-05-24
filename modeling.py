@@ -233,6 +233,9 @@ class BertModel(object):
             kernel_initializer=create_initializer(config.initializer_range))
 
   def get_pooled_output(self):
+    """
+    pooled output是第一个sequence_output过了一个全连接网络
+    """
     return self.pooled_output
 
   def get_sequence_output(self):
@@ -870,6 +873,7 @@ def transformer_model(input_tensor,
           attention_output = layer_norm(attention_output + layer_input)
 
       # The activation is only applied to the "intermediate" hidden layer.
+      # feed-forward network
       with tf.variable_scope("intermediate"):
         intermediate_output = tf.layers.dense(
             attention_output,
